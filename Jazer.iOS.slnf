@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Jazer.sln",
+    "projects": [
+      "Jazer.Game\\Jazer.Game.csproj",
+      "Jazer.Resources\\Jazer.Resources.csproj",
+      "Jazer.iOS\\Jazer.iOS.csproj"
+    ]
+  }
+}
