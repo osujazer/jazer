@@ -5,6 +5,7 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup Label="Project References">
+    <ProjectReference Include="..\Jazer.Game.Rulesets.Osu\Jazer.Game.Rulesets.Osu.csproj" />
     <ProjectReference Include="..\Jazer.Game\Jazer.Game.csproj" />
   </ItemGroup>
   <ItemGroup Label="Package References">
