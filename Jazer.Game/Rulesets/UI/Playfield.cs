@@ -14,15 +14,15 @@ public abstract partial class Playfield : LifetimeManagementContainer
 {
     protected Beatmap Beatmap { get; private set; }
 
-    private readonly LifetimeEntryManager entryManager = new LifetimeEntryManager();
+    private readonly LifetimeEntryManager lifetimeManager = new LifetimeEntryManager();
     private readonly Dictionary<HitObjectLifetimeEntry, DrawableHitObject> hitObjectMap = new Dictionary<HitObjectLifetimeEntry, DrawableHitObject>();
 
     protected Playfield(Beatmap beatmap)
     {
         Beatmap = beatmap;
 
-        entryManager.EntryBecameAlive += entry => addDrawableHitObject((HitObjectLifetimeEntry)entry);
-        entryManager.EntryBecameDead += entry => removeDrawableHitObject((HitObjectLifetimeEntry)entry);
+        lifetimeManager.EntryBecameAlive += entry => addDrawableHitObject((HitObjectLifetimeEntry)entry);
+        lifetimeManager.EntryBecameDead += entry => removeDrawableHitObject((HitObjectLifetimeEntry)entry);
     }
 
     protected abstract DrawableHitObject CreateDrawableFor(HitObject hitObject);
@@ -41,7 +41,7 @@ public abstract partial class Playfield : LifetimeManagementContainer
     {
         var entry = new HitObjectLifetimeEntry(hitObject);
 
-        entryManager.AddEntry(entry);
+        lifetimeManager.AddEntry(entry);
     }
 
     private void addDrawableHitObject(HitObjectLifetimeEntry entry)
@@ -59,6 +59,16 @@ public abstract partial class Playfield : LifetimeManagementContainer
             return;
 
         RemoveInternal(dho, true);
+    }
+
+    protected override bool UpdateChildrenLife()
+    {
+        if (!IsPresent)
+            return false;
+
+        bool aliveChanged = base.CheckChildrenLife();
+        aliveChanged |= lifetimeManager.Update(Time.Current);
+        return aliveChanged;
     }
 
     public class HitObjectLifetimeEntry : LifetimeEntry
