@@ -28,14 +28,20 @@ public class Auth
         }
         catch (Exception ex)
         {
-            Token.Value = null;
+            lock (access_token_lock)
+            {
+                Token.Value = null;
+            }
 
             // TODO: better than this
 
             throw;
         }
 
-        Token.Value = loginRequest.ResponseObject;
+        lock (access_token_lock)
+        {
+            Token.Value = loginRequest.ResponseObject;
+        }
     }
 
     private static readonly object access_token_lock = new object();
