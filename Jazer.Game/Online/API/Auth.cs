@@ -1,6 +1,6 @@
-#nullable enable
-
 using System;
+using System.Net.Http;
+using System.Net.Sockets;
 using Jazer.Game.Online.API.Requests;
 using osu.Framework.Bindables;
 
@@ -25,19 +25,44 @@ public class Auth(AuthToken? token)
         }
         catch (Exception ex)
         {
-            lock (access_token_lock)
-            {
-                Token.Value = null;
-            }
+            Token.Value = null;
 
             // TODO: better than this
 
             throw;
         }
 
-        lock (access_token_lock)
+        Token.Value = loginRequest.ResponseObject;
+    }
+
+    internal bool AuthenticateWithRefreshToken(string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            throw new ArgumentException("Missing refresh token");
+
+        using var loginWithRefreshTokenRequest = new LoginWithRefreshTokenRequest(refreshToken);
+
+        try
         {
-            Token.Value = loginRequest.ResponseObject;
+            loginWithRefreshTokenRequest.Perform();
+
+            Token.Value = loginWithRefreshTokenRequest.ResponseObject;
+
+            return true;
+        }
+        catch (SocketException)
+        {
+            return false;
+        }
+        catch (HttpRequestException)
+        {
+            return false;
+        }
+        catch (Exception)
+        {
+            Token.Value = null;
+
+            return false;
         }
     }
 
@@ -64,8 +89,9 @@ public class Auth(AuthToken? token)
         if (Token.Value?.IsValid == true)
             return true;
 
-        // TODO: refresh token
+        if (!string.IsNullOrWhiteSpace(Token.Value?.RefreshToken))
+            AuthenticateWithRefreshToken(Token.Value!.RefreshToken);
 
-        return false;
+        return Token.Value?.IsValid == true;
     }
 }
