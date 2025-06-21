@@ -50,6 +50,11 @@ namespace Jazer.Game
         {
             Resources.AddStore(new DllResourceStore(typeof(JazerResources).Assembly));
 
+            AddFont(Resources, "Fonts/NunitoSans/NunitoSans-Regular");
+            AddFont(Resources, "Fonts/NunitoSans/NunitoSans-Medium");
+            AddFont(Resources, "Fonts/NunitoSans/NunitoSans-SemiBold");
+            AddFont(Resources, "Fonts/NunitoSans/NunitoSans-Bold");
+
             dependencies.CacheAs(LocalConfig);
 
             dependencies.CacheAs(API ??= new APIAccess(LocalConfig));
