@@ -1,7 +1,8 @@
 using Jazer.Game.Beatmaps;
+using Jazer.Game.Rulesets.Gameplay;
+using Jazer.Game.Rulesets.Osu.Gameplay;
 using Jazer.Game.Rulesets.Osu.Objects;
 using Jazer.Game.Rulesets.Osu.UI;
-using JetBrains.Annotations;
 using NUnit.Framework;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Sprites;
@@ -15,6 +16,8 @@ public partial class TestSceneOsuPlayfield : JazerTestScene
     private readonly ManualFramedClock clock = new ManualFramedClock();
 
     private readonly TestPlayfield playfield;
+
+    private readonly GameplayProcessor processor;
 
     private readonly SpriteText objectCountText;
 
@@ -36,7 +39,7 @@ public partial class TestSceneOsuPlayfield : JazerTestScene
         ]);
 
         AddRange([
-            playfield = new TestPlayfield(beatmap)
+            playfield = new TestPlayfield(processor = new OsuGameplayProcessor(beatmap))
             {
                 RelativeSizeAxes = Axes.Both,
                 Clock = clock,
@@ -62,6 +65,8 @@ public partial class TestSceneOsuPlayfield : JazerTestScene
         base.Update();
 
         clock.ProcessFrame();
+
+        processor.Update(clock.CurrentTime);
     }
 
     protected override void UpdateAfterChildren()
@@ -73,11 +78,11 @@ public partial class TestSceneOsuPlayfield : JazerTestScene
 
     private partial class TestPlayfield : OsuPlayfield
     {
-        public TestPlayfield([NotNull] Beatmap beatmap)
-            : base(beatmap)
+        public TestPlayfield(GameplayProcessor gameplayProcessor)
+            : base(gameplayProcessor)
         {
         }
 
-        public int AliveHitObjectCount => InternalChildren.Count;
+        public int AliveHitObjectCount => GameplayProcessor.AliveObjects.Count;
     }
 }
