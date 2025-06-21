@@ -27,5 +27,7 @@ public interface IAPIAccess
 
     void Logout();
 
+    ErrorResponse? Register(string username, string email, string password);
+
     internal void Schedule(Action action);
 }
