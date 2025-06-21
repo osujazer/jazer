@@ -22,7 +22,7 @@ namespace Jazer.Game
 
         protected JazerConfigManager LocalConfig { get; set; }
 
-        protected APIAccess API { get; private set; }
+        protected IAPIAccess API { get; private set; }
 
         private DependencyContainer dependencies;
 

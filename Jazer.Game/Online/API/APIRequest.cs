@@ -45,7 +45,7 @@ public abstract class APIRequest
 
     protected virtual string Uri => $@"https://jazer-api.tsunyoku.xyz/api/v1/{Target}";
 
-    protected APIAccess? API;
+    protected IAPIAccess? API;
 
     protected WebRequest? WebRequest;
 
@@ -66,7 +66,7 @@ public abstract class APIRequest
         }
     }
 
-    public void AttachAPI(APIAccess api)
+    public void AttachAPI(IAPIAccess api)
     {
         API = api;
     }

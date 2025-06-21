@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +11,13 @@ using System.Threading.Tasks;
 using Jazer.Game.Configuration;
 using Jazer.Game.Online.API.Requests;
 using Jazer.Game.Online.API.Responses;
-using JetBrains.Annotations;
 using osu.Framework.Bindables;
 using osu.Framework.Development;
 using osu.Framework.Graphics;
 
 namespace Jazer.Game.Online.API;
 
-public partial class APIAccess : Component
+public partial class APIAccess : Component, IAPIAccess
 {
     private readonly JazerConfigManager config;
     private readonly Auth auth;
@@ -25,7 +26,7 @@ public partial class APIAccess : Component
 
     public string ProvidedUsername { get; private set; }
 
-    private string password { get; set; }
+    private string? password { get; set; }
 
     private readonly Bindable<APIState> state = new Bindable<APIState>();
 
@@ -37,8 +38,7 @@ public partial class APIAccess : Component
 
     public string AccessToken => auth.RetrieveAccessToken();
 
-    [CanBeNull]
-    public Exception LastLoginError { get; private set; }
+    public Exception? LastLoginError { get; private set; }
 
     protected bool HasLogin => auth.Token.Value != null ||
                                (!string.IsNullOrEmpty(ProvidedUsername) && !string.IsNullOrEmpty(password));
