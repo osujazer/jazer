@@ -1,19 +1,16 @@
+#nullable enable
+
 using System;
 using Jazer.Game.Online.API.Requests;
-using JetBrains.Annotations;
 using osu.Framework.Bindables;
 
 namespace Jazer.Game.Online.API;
 
-public class Auth
+public class Auth(AuthToken? token)
 {
-    public readonly Bindable<AuthToken> Token = new Bindable<AuthToken>();
+    public readonly Bindable<AuthToken?> Token = new Bindable<AuthToken?>(token);
 
-    public string TokenString
-    {
-        get => Token.Value?.ToString();
-        set => Token.Value = string.IsNullOrWhiteSpace(value) ? null : AuthToken.Parse(value);
-    }
+    public string? TokenString => Token.Value?.ToString();
 
     internal void AuthenticateWithLogin(string username, string password)
     {
@@ -46,13 +43,12 @@ public class Auth
 
     private static readonly object access_token_lock = new object();
 
-    [CanBeNull]
-    internal string RetrieveAccessToken()
+    internal string? RetrieveAccessToken()
     {
         lock (access_token_lock)
         {
             return ensureAccessToken()
-                ? Token.Value.AccessToken
+                ? Token.Value!.AccessToken
                 : null;
         }
     }

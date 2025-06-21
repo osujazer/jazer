@@ -51,12 +51,12 @@ public partial class APIAccess : Component, IAPIAccess
     {
         this.config = config;
 
-        auth = new Auth();
+        string authToken = config.Get<string>(JazerSetting.AuthToken);
+
+        auth = new Auth(AuthToken.Parse(authToken));
+        auth.Token.ValueChanged += onTokenChanged;
 
         ProvidedUsername = config.Get<string>(JazerSetting.Username);
-
-        auth.TokenString = config.Get<string>(JazerSetting.AuthToken);
-        auth.Token.ValueChanged += onTokenChanged;
 
         if (HasLogin)
         {
