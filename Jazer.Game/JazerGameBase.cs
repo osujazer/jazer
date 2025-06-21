@@ -1,9 +1,12 @@
+using Jazer.Game.Configuration;
+using Jazer.Game.Online.API;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.IO.Stores;
 using osuTK;
 using Jazer.Resources;
+using osu.Framework.Platform;
 
 namespace Jazer.Game
 {
@@ -15,6 +18,14 @@ namespace Jazer.Game
 
         protected override Container<Drawable> Content { get; }
 
+        protected Storage Storage { get; set; }
+
+        protected JazerConfigManager LocalConfig { get; set; }
+
+        protected APIAccess API { get; private set; }
+
+        private DependencyContainer dependencies;
+
         protected JazerGameBase()
         {
             // Ensure game and tests scale with window size and screen DPI.
@@ -25,10 +36,26 @@ namespace Jazer.Game
             });
         }
 
+        public override void SetHost(GameHost host)
+        {
+            base.SetHost(host);
+
+            Storage ??= host.Storage;
+
+            LocalConfig ??= new JazerConfigManager(Storage);
+        }
+
         [BackgroundDependencyLoader]
         private void load()
         {
             Resources.AddStore(new DllResourceStore(typeof(JazerResources).Assembly));
+
+            dependencies.CacheAs(LocalConfig);
+
+            dependencies.CacheAs(API ??= new APIAccess(this, LocalConfig));
         }
+
+        protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) =>
+            dependencies = new DependencyContainer(base.CreateChildDependencies(parent));
     }
 }
