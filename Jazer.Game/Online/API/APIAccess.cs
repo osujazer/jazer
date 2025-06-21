@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using Jazer.Game.Configuration;
 using Jazer.Game.Online.API.Requests;
 using Jazer.Game.Online.API.Responses;
+using Newtonsoft.Json;
 using osu.Framework.Bindables;
 using osu.Framework.Development;
+using osu.Framework.Extensions.ExceptionExtensions;
 using osu.Framework.Graphics;
 
 namespace Jazer.Game.Online.API;
@@ -68,6 +70,31 @@ public partial class APIAccess : Component, IAPIAccess
         };
 
         thread.Start();
+    }
+
+    public ErrorResponse? Register(string username, string email, string password)
+    {
+        Debug.Assert(state.Value == APIState.Offline);
+
+        var request = new RegisterRequest(username, email, password);
+
+        try
+        {
+            request.Perform();
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<ErrorResponse>(request.GetResponseString() ?? string.Empty);
+            }
+            catch
+            {
+                ex.Rethrow();
+            }
+        }
+
+        return null;
     }
 
     public new void Schedule(Action action) => base.Schedule(action);
