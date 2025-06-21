@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Threading.Tasks;
 using Jazer.Game.Online.API.Responses;
@@ -11,7 +9,7 @@ public interface IAPIAccess
 {
     IBindable<APIUser> LocalUser { get; }
 
-    string AccessToken { get; }
+    string? AccessToken { get; }
 
     string ProvidedUsername { get; }
 

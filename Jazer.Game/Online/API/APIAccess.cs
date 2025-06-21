@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,7 +34,7 @@ public partial class APIAccess : Component, IAPIAccess
 
     public IBindable<APIUser> LocalUser => localUser;
 
-    public string AccessToken => auth.RetrieveAccessToken();
+    public string? AccessToken => auth.RetrieveAccessToken();
 
     public Exception? LastLoginError { get; private set; }
 
@@ -171,6 +169,8 @@ public partial class APIAccess : Component, IAPIAccess
         if (localUser.IsDefault)
             Scheduler.Add(setPlaceholderUser, false);
 
+        Debug.Assert(password is not null);
+
         config.SetValue(
             JazerSetting.Username,
             config.Get<bool>(JazerSetting.SaveUsername) ? ProvidedUsername : string.Empty);
@@ -201,7 +201,7 @@ public partial class APIAccess : Component, IAPIAccess
 
         userReq.Failure += ex =>
         {
-            if (ex is WebException webException && webException.Message == @"Unauthorized")
+            if (ex is WebException { Message: @"Unauthorized" })
             {
                 Logout();
             }
@@ -276,7 +276,7 @@ public partial class APIAccess : Component, IAPIAccess
             handleWebException(ex);
             return false;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }
@@ -354,7 +354,7 @@ public partial class APIAccess : Component, IAPIAccess
         CreatedAt = DateTimeOffset.UtcNow.AddDays(-1),
     };
 
-    private void onTokenChanged(ValueChangedEvent<AuthToken> e)
+    private void onTokenChanged(ValueChangedEvent<AuthToken?> e)
         => config.SetValue(
             JazerSetting.AuthToken,
             config.Get<bool>(JazerSetting.SavePassword) ? auth.TokenString : string.Empty);
@@ -370,7 +370,6 @@ public partial class APIAccess : Component, IAPIAccess
     private class WebRequestFlushedException(APIState state)
         : Exception($@"Request failed from flush operation (state {state})");
 }
-
 
 public enum APIState
 {
