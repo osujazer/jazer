@@ -2,6 +2,8 @@ using System;
 using System.Net.Http;
 using System.Net.Sockets;
 using Jazer.Game.Online.API.Requests;
+using Jazer.Game.Online.API.Responses;
+using Newtonsoft.Json;
 using osu.Framework.Bindables;
 
 namespace Jazer.Game.Online.API;
@@ -27,9 +29,20 @@ public class Auth(AuthToken? token)
         {
             Token.Value = null;
 
-            // TODO: better than this
+            var throwableException = ex;
 
-            throw;
+            try
+            {
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(loginRequest.GetResponseString() ?? string.Empty);
+
+                if (errorResponse is not null)
+                    throwableException = new APIException(errorResponse.Errors, ex);
+            }
+            catch
+            {
+            }
+
+            throw throwableException;
         }
 
         Token.Value = loginRequest.ResponseObject;

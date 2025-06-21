@@ -1,7 +1,7 @@
-#nullable enable
-
 using System;
 using System.Diagnostics;
+using Jazer.Game.Online.API.Responses;
+using Newtonsoft.Json;
 using osu.Framework.IO.Network;
 
 namespace Jazer.Game.Online.API;
@@ -152,7 +152,21 @@ public abstract class APIRequest
 
             WebRequest?.Abort();
 
-            // TODO: read error from response
+            if (e is not OperationCanceledException)
+            {
+                try
+                {
+                    string? responseString = WebRequest?.GetResponseString();
+
+                    var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseString ?? string.Empty);
+
+                    if (errorResponse is not null)
+                        e = new APIException(errorResponse.Errors, e);
+                }
+                catch
+                {
+                }
+            }
 
             TriggerFailure(e);
         }
