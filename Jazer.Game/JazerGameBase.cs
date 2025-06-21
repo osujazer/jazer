@@ -52,7 +52,7 @@ namespace Jazer.Game
 
             dependencies.CacheAs(LocalConfig);
 
-            dependencies.CacheAs(API ??= new APIAccess(this, LocalConfig));
+            dependencies.CacheAs(API ??= new APIAccess(LocalConfig));
         }
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) =>

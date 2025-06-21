@@ -18,7 +18,6 @@ namespace Jazer.Game.Online.API;
 
 public partial class APIAccess : Component
 {
-    private readonly JazerGameBase game;
     private readonly JazerConfigManager config;
     private readonly Auth auth;
 
@@ -48,9 +47,8 @@ public partial class APIAccess : Component
 
     private int failureCount;
 
-    public APIAccess(JazerGameBase game, JazerConfigManager config)
+    public APIAccess(JazerConfigManager config)
     {
-        this.game = game;
         this.config = config;
 
         auth = new Auth();
