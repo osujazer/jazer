@@ -1,5 +1,6 @@
 using Jazer.Game.Configuration;
 using Jazer.Game.Online.API;
+using Jazer.Game.UserInterface;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -25,6 +26,9 @@ namespace Jazer.Game
         protected IAPIAccess API { get; private set; }
 
         private DependencyContainer dependencies;
+
+        [Cached]
+        private readonly ColourProvider colourProvider = new ColourProvider();
 
         protected JazerGameBase()
         {
@@ -58,6 +62,9 @@ namespace Jazer.Game
             dependencies.CacheAs(LocalConfig);
 
             dependencies.CacheAs(API ??= new APIAccess(LocalConfig));
+
+            if (API is APIAccess apiAccess)
+                base.Content.Add(apiAccess);
         }
 
         protected override IReadOnlyDependencyContainer CreateChildDependencies(IReadOnlyDependencyContainer parent) =>
