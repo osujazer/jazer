@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Jazer.Game.Online.API.Responses;
 using Newtonsoft.Json;
 using osu.Framework.IO.Network;
@@ -91,6 +93,42 @@ public abstract class APIRequest
         try
         {
             WebRequest.Perform();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+
+        if (isFailing)
+            return;
+
+        PostProcess();
+
+        if (isFailing)
+            return;
+
+        TriggerSuccess();
+    }
+
+    public async Task PerformAsync(CancellationToken cancellationToken = default)
+    {
+        Debug.Assert(API is not null);
+
+        if (isFailing)
+            return;
+
+        WebRequest = CreateWebRequest();
+        WebRequest.Failed += Fail;
+        WebRequest.AllowRetryOnTimeout = false;
+
+        if (!string.IsNullOrEmpty(API.AccessToken))
+            WebRequest.AddHeader(@"Authorization", $@"Bearer {API.AccessToken}");
+
+        if (isFailing)
+            return;
+
+        try
+        {
+            await WebRequest.PerformAsync(cancellationToken);
         }
         catch (OperationCanceledException)
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jazer.Game.Online.API.Responses;
 using osu.Framework.Bindables;
@@ -21,7 +22,7 @@ public interface IAPIAccess
 
     void Perform(APIRequest request);
 
-    Task PerformAsync(APIRequest request);
+    Task PerformAsync(APIRequest request, CancellationToken cancellationToken = default);
 
     void Login(string username, string password);
 

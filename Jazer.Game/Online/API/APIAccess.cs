@@ -112,8 +112,18 @@ public partial class APIAccess : Component, IAPIAccess
         }
     }
 
-    public Task PerformAsync(APIRequest request) =>
-        Task.Factory.StartNew(() => Perform(request), TaskCreationOptions.LongRunning);
+    public async Task PerformAsync(APIRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            request.AttachAPI(this);
+            await request.PerformAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            request.Fail(ex);
+        }
+    }
 
     public void Login(string username, string password)
     {
