@@ -22,6 +22,11 @@ namespace Jazer.Game
 
         private DependencyContainer dependencies = null!;
 
+        /// <summary>
+        /// Length of debounce (in milliseconds) for commonly occuring sample playbacks that could stack.
+        /// </summary>
+        public const int SAMPLE_DEBOUNCE_TIME = 20;
+
         protected JazerGameBase()
         {
             base.Content.Add(new DrawSizePreservingFillContainer

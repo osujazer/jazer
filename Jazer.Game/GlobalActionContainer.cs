@@ -13,5 +13,11 @@ public partial class GlobalActionContainer : KeyBindingContainer<GlobalAction>
 
 public enum GlobalAction
 {
+    Select,
+    SelectNext,
+    SelectPrevious,
+    SelectNextGroup,
+    SelectPreviousGroup,
     ToggleToolbar,
+    AbsoluteScrollSongList,
 }
