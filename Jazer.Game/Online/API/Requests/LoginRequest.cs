@@ -14,6 +14,7 @@ public class LoginRequest : JazerJsonWebRequest<AuthToken>
         this.password = password;
 
         Method = HttpMethod.Post;
+        ContentType = "application/json";
         Url = "https://jazer-api.tsunyoku.xyz/api/v1/users/login";
     }
 
@@ -26,7 +27,6 @@ public class LoginRequest : JazerJsonWebRequest<AuthToken>
     protected override void PrePerform()
     {
         AddRaw(JsonConvert.SerializeObject(request));
-        AddHeader("Content-Type", "application/json");
 
         base.PrePerform();
     }
