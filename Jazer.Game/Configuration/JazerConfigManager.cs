@@ -12,6 +12,7 @@ public class JazerConfigManager(Storage storage)
         SetDefault(JazerSetting.Username, string.Empty);
         SetDefault(JazerSetting.SavePassword, false);
         SetDefault(JazerSetting.SaveUsername, true);
+        SetDefault(JazerSetting.ShowToolbar, true);
     }
 }
 
@@ -20,5 +21,6 @@ public enum JazerSetting
     AuthToken,
     Username,
     SavePassword,
-    SaveUsername
+    SaveUsername,
+    ShowToolbar,
 }
