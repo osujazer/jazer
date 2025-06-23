@@ -97,8 +97,8 @@ public partial class BorderLayout : CompositeDrawable
     {
         var padding = new MarginPadding
         {
-            Top = top.DrawHeight,
-            Bottom = bottom.DrawHeight,
+            Top = top.LayoutSize.Y,
+            Bottom = bottom.LayoutSize.Y,
         };
 
         right.Padding = padding;
@@ -106,8 +106,8 @@ public partial class BorderLayout : CompositeDrawable
 
         center.Padding = padding with
         {
-            Left = right.DrawWidth,
-            Right = left.DrawWidth,
+            Left = right.LayoutSize.X,
+            Right = left.LayoutSize.X,
         };
     }
 }
