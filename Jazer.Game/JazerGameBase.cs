@@ -14,13 +14,13 @@ namespace Jazer.Game
     {
         protected override Container<Drawable> Content { get; }
 
-        protected Storage Storage { get; set; }
+        protected Storage Storage { get; set; } = null!;
 
-        protected JazerConfigManager LocalConfig { get; set; }
+        protected JazerConfigManager LocalConfig { get; set; } = null!;
 
-        protected IAPIAccess API { get; private set; }
+        protected IAPIAccess API { get; private set; } = null!;
 
-        private DependencyContainer dependencies;
+        private DependencyContainer dependencies = null!;
 
         protected JazerGameBase()
         {
