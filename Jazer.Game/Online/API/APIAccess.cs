@@ -196,14 +196,14 @@ public partial class APIAccess : Component, IAPIAccess
         if (localUser.IsDefault)
             Scheduler.Add(setPlaceholderUser, false);
 
-        Debug.Assert(password is not null);
-
         config.SetValue(
             JazerSetting.Username,
             config.Get<bool>(JazerSetting.SaveUsername) ? ProvidedUsername : string.Empty);
 
         if (auth.RetrieveAccessToken() is null && HasLogin)
         {
+            Debug.Assert(password is not null);
+
             state.Value = APIState.Connecting;
             LastLoginError = null;
 
