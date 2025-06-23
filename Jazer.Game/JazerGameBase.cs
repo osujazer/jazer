@@ -1,13 +1,12 @@
 using Jazer.Game.Configuration;
 using Jazer.Game.Online.API;
-using Jazer.Game.UserInterface;
+using Jazer.Resources;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.IO.Stores;
-using osuTK;
-using Jazer.Resources;
 using osu.Framework.Platform;
+using osuTK;
 
 namespace Jazer.Game
 {
@@ -26,9 +25,6 @@ namespace Jazer.Game
         protected IAPIAccess API { get; private set; }
 
         private DependencyContainer dependencies;
-
-        [Cached]
-        private readonly ColourProvider colourProvider = new ColourProvider();
 
         protected JazerGameBase()
         {
