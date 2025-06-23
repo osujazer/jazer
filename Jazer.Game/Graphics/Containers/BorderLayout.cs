@@ -1,5 +1,6 @@
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Layout;
 
 namespace Jazer.Game.Graphics.Containers;
 
@@ -63,6 +64,8 @@ public partial class BorderLayout : CompositeDrawable
         set => center.Child = value;
     }
 
+    private readonly LayoutValue layoutBacking = new LayoutValue(Invalidation.DrawSize, InvalidationSource.Child);
+
     public BorderLayout()
     {
         RelativeSizeAxes = Axes.Both;
@@ -75,13 +78,19 @@ public partial class BorderLayout : CompositeDrawable
             bottom,
             top,
         ];
+
+        AddLayout(layoutBacking);
     }
 
     protected override void Update()
     {
         base.Update();
 
-        updateLayout();
+        if (!layoutBacking.IsValid)
+        {
+            updateLayout();
+            layoutBacking.Validate();
+        }
     }
 
     private void updateLayout()
