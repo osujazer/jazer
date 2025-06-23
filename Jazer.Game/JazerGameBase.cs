@@ -24,9 +24,13 @@ namespace Jazer.Game
 
         protected JazerGameBase()
         {
-            base.Content.Add(Content = new DrawSizePreservingFillContainer
+            base.Content.Add(new DrawSizePreservingFillContainer
             {
-                TargetDrawSize = new Vector2(1366, 768)
+                TargetDrawSize = new Vector2(1366, 768),
+                Child = Content = new GlobalActionContainer
+                {
+                    RelativeSizeAxes = Axes.Both,
+                }
             });
         }
 
