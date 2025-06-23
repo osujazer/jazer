@@ -1,93 +1,69 @@
 using System.Collections.Generic;
-using Jazer.Game.Beatmaps;
+using Jazer.Game.Rulesets.Gameplay;
 using Jazer.Game.Rulesets.Objects;
 using Jazer.Game.Rulesets.Objects.Drawables;
+using osu.Framework.Allocation;
+using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Performance;
 
 namespace Jazer.Game.Rulesets.UI;
 
-public abstract partial class Playfield : LifetimeManagementContainer
+public abstract partial class Playfield : CompositeDrawable
 {
-    protected Beatmap Beatmap { get; private set; }
+    protected readonly GameplayProcessor GameplayProcessor;
 
-    private readonly LifetimeEntryManager lifetimeManager = new LifetimeEntryManager();
-    private readonly Dictionary<HitObjectLifetimeEntry, DrawableHitObject> hitObjectMap = new Dictionary<HitObjectLifetimeEntry, DrawableHitObject>();
+    private readonly Dictionary<HitObjectState, DrawableHitObject> hitObjectMap = new Dictionary<HitObjectState, DrawableHitObject>();
 
-    protected Playfield(Beatmap beatmap)
+    private Container<DrawableHitObject> hitObjectContainer = null!;
+
+    public IReadOnlyList<DrawableHitObject> HitObjects => hitObjectContainer.Children;
+
+    protected Playfield(GameplayProcessor gameplayProcessor)
     {
-        Beatmap = beatmap;
-
-        lifetimeManager.EntryBecameAlive += entry => addDrawableHitObject((HitObjectLifetimeEntry)entry);
-        lifetimeManager.EntryBecameDead += entry => removeDrawableHitObject((HitObjectLifetimeEntry)entry);
+        this.GameplayProcessor = gameplayProcessor;
     }
 
     protected abstract DrawableHitObject CreateDrawableFor(HitObject hitObject);
 
-    protected virtual HitObjectLifetimeEntry CreateLifetimeEntry(HitObject hitObject) => new HitObjectLifetimeEntry(hitObject);
+    [BackgroundDependencyLoader]
+    private void load()
+    {
+        AddInternal(hitObjectContainer = new Container<DrawableHitObject>
+        {
+            RelativeSizeAxes = Axes.Both,
+        });
+    }
 
     protected override void LoadComplete()
     {
         base.LoadComplete();
 
-        foreach (var hitObject in Beatmap.HitObjects)
-            addHitObject(hitObject);
+        GameplayProcessor.HitObjectBecameAlive += addDrawableHitObject;
+        GameplayProcessor.HitObjectBecameDead += removeDrawableHitObject;
     }
 
-    private void addHitObject(HitObject hitObject)
+    private void addDrawableHitObject(HitObjectState state)
     {
-        var entry = new HitObjectLifetimeEntry(hitObject);
+        var dho = CreateDrawableFor(state.HitObject);
 
-        lifetimeManager.AddEntry(entry);
+        hitObjectMap[state] = dho;
+
+        hitObjectContainer.Add(dho);
     }
 
-    private void addDrawableHitObject(HitObjectLifetimeEntry entry)
+    private void removeDrawableHitObject(HitObjectState state)
     {
-        var dho = CreateDrawableFor(entry.HitObject);
-
-        hitObjectMap[entry] = dho;
-
-        AddInternal(dho);
-    }
-
-    private void removeDrawableHitObject(HitObjectLifetimeEntry entry)
-    {
-        if (!hitObjectMap.Remove(entry, out var dho))
+        if (!hitObjectMap.Remove(state, out var dho))
             return;
 
-        RemoveInternal(dho, true);
+        hitObjectContainer.Remove(dho, true);
     }
 
-    protected override bool UpdateChildrenLife()
+    protected override void Dispose(bool isDisposing)
     {
-        if (!IsPresent)
-            return false;
+        base.Dispose(isDisposing);
 
-        bool aliveChanged = base.CheckChildrenLife();
-        aliveChanged |= lifetimeManager.Update(Time.Current);
-        return aliveChanged;
-    }
-
-    public class HitObjectLifetimeEntry : LifetimeEntry
-    {
-        public readonly HitObject HitObject;
-
-        public HitObjectLifetimeEntry(HitObject hitObject)
-        {
-            HitObject = hitObject;
-
-            LifetimeStart = hitObject.StartTime - PastLifetimeExtension;
-            LifetimeEnd = hitObject.EndTime + FutureLifetimeExtension;
-        }
-
-        /// <summary>
-        /// The amount of time that a hitObject will become alive before its start time
-        /// </summary>
-        protected virtual double PastLifetimeExtension => 1000;
-
-        /// <summary>
-        /// The amount of time that a hitObject will remain alive after it's end time
-        /// </summary>
-        protected virtual double FutureLifetimeExtension => 1000;
+        GameplayProcessor.HitObjectBecameAlive += addDrawableHitObject;
+        GameplayProcessor.HitObjectBecameDead += removeDrawableHitObject;
     }
 }
