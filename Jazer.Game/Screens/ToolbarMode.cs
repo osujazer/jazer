@@ -4,4 +4,5 @@ public enum ToolbarMode
 {
     Show,
     Hide,
+    UserTriggered,
 }

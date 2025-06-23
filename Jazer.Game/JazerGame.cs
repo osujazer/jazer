@@ -1,8 +1,6 @@
-﻿using Jazer.Game.Graphics.Containers;
-using Jazer.Game.Overlays;
+﻿using Jazer.Game.Overlays;
 using Jazer.Game.Screens;
 using osu.Framework.Allocation;
-using osu.Framework.Graphics;
 
 namespace Jazer.Game
 {
@@ -13,16 +11,9 @@ namespace Jazer.Game
         [BackgroundDependencyLoader]
         private void load()
         {
-            Toolbar toolbar;
-
-            Add(new BorderLayout
+            Add(new ToolbarContainer
             {
-                RelativeSizeAxes = Axes.Both,
-                Top = toolbar = new Toolbar(),
-                Center = screenStack = new JazerScreenStack
-                {
-                    ToolbarMode = { BindTarget = toolbar.ToolbarMode }
-                }
+                Child = screenStack = new JazerScreenStack()
             });
         }
     }

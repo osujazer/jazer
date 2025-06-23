@@ -1,3 +1,4 @@
+using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Screens;
 
@@ -5,7 +6,8 @@ namespace Jazer.Game.Screens;
 
 public partial class JazerScreenStack : ScreenStack
 {
-    public readonly Bindable<ToolbarMode> ToolbarMode = new Bindable<ToolbarMode>();
+    [Resolved(canBeNull: true)]
+    private Bindable<ToolbarMode>? toolbarMode { get; set; } = null!;
 
     public JazerScreenStack()
     {
@@ -14,7 +16,7 @@ public partial class JazerScreenStack : ScreenStack
 
     private void screenPushed(IScreen prev, IScreen next)
     {
-        if (next is JazerScreen jazerScreen)
-            ToolbarMode.Value = jazerScreen.ToolbarMode;
+        if (toolbarMode != null && next is JazerScreen jazerScreen)
+            toolbarMode.Value = jazerScreen.ToolbarMode;
     }
 }
